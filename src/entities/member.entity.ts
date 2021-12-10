@@ -1,5 +1,7 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { PersonEntity } from "./person.entity";
+import { ReserveEntity } from "./reserve.entity";
+import { BorrowEntity } from "./borrow.entity";
 
 Entity('MEMBERS')
 export class MemberEntity extends PersonEntity {
@@ -14,4 +16,10 @@ export class MemberEntity extends PersonEntity {
     type: 'int',
   })
   checkedOutNo: number;
+
+  @OneToMany(() => ReserveEntity, reserve => reserve.member)
+  reserves: ReserveEntity[];
+
+  @OneToMany(() => BorrowEntity, borrowed => borrowed.member)
+  borrowed: BorrowEntity[];
 }
