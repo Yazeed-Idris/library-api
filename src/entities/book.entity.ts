@@ -1,6 +1,5 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { LibrarianEntity } from "./librarian.entity";
-import { JoinColumn } from "typeorm/browser";
 import { PublisherEntity } from "./publisher.entity";
 import { ReserveEntity } from "./reserve.entity";
 import { BookItemEntity } from "./book-item.entity";

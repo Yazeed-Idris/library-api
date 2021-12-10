@@ -3,7 +3,7 @@ import { PersonEntity } from "./person.entity";
 import { ReserveEntity } from "./reserve.entity";
 import { BorrowEntity } from "./borrow.entity";
 
-Entity('MEMBERS')
+@Entity('MEMBERS')
 export class MemberEntity extends PersonEntity {
   @Column({
     name: 'MEMBER_BARCODE',
