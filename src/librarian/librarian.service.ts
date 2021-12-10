@@ -17,6 +17,21 @@ export class LibrarianService {
     return bookId + 'was deleted successfully';
   }
 
+  getAllBookItems() {
+    return 'all books';
+  }
+  addBookItem(bookItem: any) {
+    return 'book added';
+  }
+
+  modifyBookItem(bookItemId: any) {
+    return bookItemId + 'was modified successfully';
+  }
+
+  deleteBookItem(bookItemId: any) {
+    return bookItemId + 'was deleted successfully';
+  }
+
   getAllMembers() {
     return 'all members';
   }
