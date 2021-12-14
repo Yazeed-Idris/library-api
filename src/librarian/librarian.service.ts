@@ -3,11 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BookEntity } from '../entities/book.entity';
 import { Repository } from 'typeorm';
 import { from } from 'rxjs';
+import { MemberEntity } from '../entities/member.entity';
 
 @Injectable()
 export class LibrarianService {
 
-  constructor(@InjectRepository(BookEntity) private readonly bookRepository: Repository<BookEntity>) {
+  constructor(
+    @InjectRepository(BookEntity) private readonly bookRepository: Repository<BookEntity>,
+    @InjectRepository(MemberEntity) private readonly memberRepository: Repository<MemberEntity>,
+    ) {
   }
 
   getAllBooks() {
@@ -26,38 +30,27 @@ export class LibrarianService {
     }));
   }
 
+  getBookById(bookId) {
+    return this.bookRepository.findOne(bookId);
+  }
+
   deleteBook(bookId: any) {
     return from(this.bookRepository.delete(bookId));
   }
 
-  getAllBookItems() {
-    return 'all books';
-  }
-  addBookItem(bookItem: any) {
-    return 'book added';
-  }
-
-  modifyBookItem(bookItemId: any) {
-    return bookItemId + 'was modified successfully';
-  }
-
-  deleteBookItem(bookItemId: any) {
-    return bookItemId + 'was deleted successfully';
-  }
-
   getAllMembers() {
-    return 'all members';
+    return from(this.memberRepository.find());
   }
 
   addMember(member: any){
-    return 'member added';
+    return from(this.memberRepository.save(member));
   }
 
   deleteMember(memberId: any) {
-    return memberId + 'was deleted successfully';
+    return from(this.memberRepository.delete(memberId));
   }
 
-  requestBook(params) {
-    return params;
-  }
+  // requestBook(params) {
+  //   return params;
+  // }
 }

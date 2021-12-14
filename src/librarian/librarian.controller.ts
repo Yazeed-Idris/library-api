@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { LibrarianService } from "./librarian.service";
 
 @Controller('librarian')
@@ -10,6 +10,11 @@ export class LibrarianController {
   @Get('books')
   getAllBooks() {
     return this.librarianService.getAllBooks();
+  }
+
+  @Get('book/:id')
+  getBookById(@Param('id') bookId) {
+    return this.librarianService.getBookById(bookId);
   }
 
   @Post('book')
@@ -42,10 +47,5 @@ export class LibrarianController {
   @Delete('member/:id')
   deleteMember(@Param('id') memberId: any) {
     return this.librarianService.deleteMember(memberId);
-  }
-
-  @Get('request-book')
-  requestBook(@Query() params) {
-    return this.librarianService.requestBook(params);
   }
 }
