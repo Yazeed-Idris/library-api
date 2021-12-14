@@ -13,13 +13,15 @@ export class LibrarianController {
   }
 
   @Post('book')
-  addBook(@Body('book') book: any) {
+  addBook(@Body() book: any) {
+    console.log(book)
     return this.librarianService.addBook(book);
   }
 
   @Patch('book/:id')
-  modifyBook(bookId: any) {
-    return this.librarianService.modifyBook(bookId);
+  modifyBook(@Param('id') bookId: any, @Body() update) {
+    console.log(update);
+    return this.librarianService.modifyBook(bookId, update);
   }
 
   @Delete('book/:id')
@@ -33,7 +35,7 @@ export class LibrarianController {
   }
 
   @Post('member')
-  addMember(@Body('member') member: any){
+  addMember(@Body() member: any){
     return this.librarianService.addMember(member);
   }
 

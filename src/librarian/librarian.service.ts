@@ -1,20 +1,33 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from '@nestjs/typeorm';
+import { BookEntity } from '../entities/book.entity';
+import { Repository } from 'typeorm';
+import { from } from 'rxjs';
 
 @Injectable()
 export class LibrarianService {
-  getAllBooks() {
-    return 'all books';
-  }
-  addBook(book: any) {
-    return 'book added';
+
+  constructor(@InjectRepository(BookEntity) private readonly bookRepository: Repository<BookEntity>) {
   }
 
-  modifyBook(bookId: any) {
-    return bookId + 'was modified successfully';
+  getAllBooks() {
+    return from(this.bookRepository.find());
+  }
+  addBook(book: any) {
+    return from(this.bookRepository.save(book));
+  }
+
+  async modifyBook(bookId: any, update) {
+    const book = await this.bookRepository.findOne({where: { ISBN: bookId }});
+
+    return from(this.bookRepository.save({
+      ...book,
+      ...update,
+    }));
   }
 
   deleteBook(bookId: any) {
-    return bookId + 'was deleted successfully';
+    return from(this.bookRepository.delete(bookId));
   }
 
   getAllBookItems() {
