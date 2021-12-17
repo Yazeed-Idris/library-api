@@ -24,8 +24,14 @@ export class LibrarianController {
 
   @Post('book')
   addBook(@Body() book: any) {
-    console.log(book)
+    console.log(book);
     return this.librarianService.addBook(book);
+  }
+
+  @Post('book-item')
+  addBookItem(@Body() bookItem: any) {
+    console.log(bookItem);
+    return this.librarianService.addBookItem(bookItem);
   }
 
   @Patch('book/:id')

@@ -12,7 +12,6 @@ import { BorrowEntity } from "./entities/borrow.entity";
 import { LibrarianEntity } from "./entities/librarian.entity";
 import { MemberEntity } from "./entities/member.entity";
 import { PersonEntity } from "./entities/person.entity";
-import { PublisherEntity } from "./entities/publisher.entity";
 import { ReserveEntity } from "./entities/reserve.entity";
 
 @Module({
@@ -36,7 +35,6 @@ import { ReserveEntity } from "./entities/reserve.entity";
         LibrarianEntity,
         MemberEntity,
         PersonEntity,
-        PublisherEntity,
         ReserveEntity,
       ],
       synchronize: true,
@@ -49,7 +47,6 @@ import { ReserveEntity } from "./entities/reserve.entity";
       LibrarianEntity,
       MemberEntity,
       PersonEntity,
-      PublisherEntity,
       ReserveEntity,
     ])
   ],

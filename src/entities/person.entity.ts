@@ -18,10 +18,4 @@ export class PersonEntity extends BaseEntity {
     type: 'varchar',
   })
   phone: string;
-
-  @Column({
-    name: 'ADDRESS',
-    type: "varchar",
-  })
-  address: string;
 }

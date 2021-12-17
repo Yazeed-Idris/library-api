@@ -1,9 +1,9 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { BookEntity } from "./book.entity";
 
 @Entity('BOOK_ITEMS')
 export class BookItemEntity extends BaseEntity {
-  @PrimaryColumn({
+  @PrimaryGeneratedColumn({
     name: 'BARCODE'
   })
   barcode: number;

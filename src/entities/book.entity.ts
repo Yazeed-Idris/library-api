@@ -1,8 +1,8 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { LibrarianEntity } from "./librarian.entity";
-import { PublisherEntity } from "./publisher.entity";
 import { ReserveEntity } from "./reserve.entity";
 import { BookItemEntity } from "./book-item.entity";
+import { AuthorEntity } from "./author.entity";
 
 @Entity('BOOKS')
 export class BookEntity extends BaseEntity {
@@ -12,11 +12,6 @@ export class BookEntity extends BaseEntity {
   })
   ISBN: number;
 
-  @Column({
-    name: 'RACK_NUMBER',
-    type: "int",
-  })
-  rackNumber: number;
 
   @Column({
     name: 'TITLE',
@@ -31,28 +26,13 @@ export class BookEntity extends BaseEntity {
   subject: string;
 
   @Column({
-    name: 'EDITION',
-    type: 'int',
-  })
-  edition: number;
-
-  @Column({
     name: 'PUBLICATION_DATE',
     type: 'date',
   })
   publicationDate: Date;
 
-  @ManyToOne(() => LibrarianEntity, librarian => librarian.books)
-  @JoinColumn({
-    name: 'PERSON_ID',
-  })
-  librarian: LibrarianEntity;
-
-  @ManyToOne(() => PublisherEntity, publisher => publisher.books)
-  @JoinColumn({
-    name: 'PUBLISHER_NAME',
-  })
-  publisher: PublisherEntity;
+  @ManyToOne(() => AuthorEntity, author => author.books)
+  author: AuthorEntity;
 
   @OneToMany(() => ReserveEntity, reserve => reserve.book)
   reserves: ReserveEntity[];

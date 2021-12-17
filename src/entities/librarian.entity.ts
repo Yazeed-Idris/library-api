@@ -4,6 +4,5 @@ import { BookEntity } from "./book.entity";
 
 @Entity('LIBRARIANS')
 export class LibrarianEntity extends PersonEntity{
-  @OneToMany(() => BookEntity, book => book.librarian)
-  books: BookEntity[];
+
 }

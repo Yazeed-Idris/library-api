@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany } from "typeorm";
 import { PersonEntity } from "./person.entity";
 import { ReserveEntity } from "./reserve.entity";
 import { BorrowEntity } from "./borrow.entity";
@@ -14,6 +14,7 @@ export class MemberEntity extends PersonEntity {
   @Column({
     name: 'CHECKED_OUT_NO',
     type: 'int',
+    default: 0,
   })
   checkedOutNo: number;
 
@@ -22,4 +23,7 @@ export class MemberEntity extends PersonEntity {
 
   @OneToMany(() => BorrowEntity, borrowed => borrowed.member)
   borrowed: BorrowEntity[];
+
+  @CreateDateColumn()
+  createdMember: Date;
 }
