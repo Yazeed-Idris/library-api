@@ -1,10 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { LibrarianService } from "./librarian.service";
 
 @Controller('librarian')
 export class LibrarianController {
 
   constructor(private readonly librarianService: LibrarianService) {
+  }
+
+  @Get(':id')
+  getLibrarian(@Param('id') librarianId) {
+    return this.librarianService.getLibrarian(librarianId);
   }
 
   @Get('books')

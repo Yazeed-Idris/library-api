@@ -4,6 +4,7 @@ import { BookEntity } from '../entities/book.entity';
 import { Repository } from 'typeorm';
 import { from } from 'rxjs';
 import { MemberEntity } from '../entities/member.entity';
+import { LibrarianEntity } from '../entities/librarian.entity';
 
 @Injectable()
 export class LibrarianService {
@@ -11,7 +12,16 @@ export class LibrarianService {
   constructor(
     @InjectRepository(BookEntity) private readonly bookRepository: Repository<BookEntity>,
     @InjectRepository(MemberEntity) private readonly memberRepository: Repository<MemberEntity>,
+    @InjectRepository(LibrarianEntity) private readonly librarianRepository: Repository<LibrarianEntity>,
     ) {
+  }
+
+  getLibrarian(librarianId) {
+    return from(this.librarianRepository.findOne({
+      where: {
+        personId: librarianId,
+      }
+    }));
   }
 
   getAllBooks() {
