@@ -58,5 +58,5 @@ export class BookEntity extends BaseEntity {
   reserves: ReserveEntity[];
 
   @OneToMany(() => BookItemEntity, bookItem => bookItem.book)
-  bookItem: BookEntity;
+  bookItem: BookItemEntity;
 }
