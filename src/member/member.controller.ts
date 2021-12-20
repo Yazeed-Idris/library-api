@@ -17,9 +17,23 @@ export class MemberController {
     return this.memberService.getMember(memberId);
   }
 
-  @Post('borrow/:bookId')
-  borrowBook(@Param('bookId') bookId) {
-    return this.memberService.borrowBook(bookId);
+  @Post('borrow/:bookId/:memberId')
+  borrowBook(@Param('bookId') bookId, @Param('memberId') memberId) {
+    return this.memberService.borrowBook(bookId, memberId);
   }
 
+  @Post('reserve/:bookId/:memberId')
+  reserveBook(@Param('bookId') bookISBN, @Param('memberId') memberId) {
+    return this.memberService.reserveBook(bookISBN, memberId)
+  }
+
+  @Post('renew/:barcode')
+  renewBook(@Param('barcode') barcode) {
+    return this.memberService.renewBook(barcode);
+  }
+
+  @Post('return/:barcode/:memberId')
+  returnBook(@Param('barcode') barcode, @Param('memberId') memberId) {
+    return this.memberService.returnBook(barcode, memberId);
+  }
 }

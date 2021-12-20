@@ -34,9 +34,13 @@ export class BookEntity extends BaseEntity {
   @ManyToOne(() => AuthorEntity, author => author.books)
   author: AuthorEntity;
 
-  @OneToMany(() => ReserveEntity, reserve => reserve.book)
+  @OneToMany(() => ReserveEntity, reserve => reserve.book, {
+    cascade: true,
+  })
   reserves: ReserveEntity[];
 
-  @OneToMany(() => BookItemEntity, bookItem => bookItem.book)
+  @OneToMany(() => BookItemEntity, bookItem => bookItem.book, {
+    cascade: true,
+  })
   bookItem: BookItemEntity;
 }

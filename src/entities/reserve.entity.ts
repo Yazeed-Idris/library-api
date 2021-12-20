@@ -11,7 +11,8 @@ export class ReserveEntity extends BaseEntity {
   id: number;
 
   @CreateDateColumn({
-    name: 'RESERVED_DATE'
+    name: 'RESERVED_DATE',
+    default: new Date(),
   })
   reservedDate: Date;
 
@@ -21,7 +22,7 @@ export class ReserveEntity extends BaseEntity {
   })
   member: MemberEntity;
 
-  @ManyToOne(() => BookEntity, book => book.reserves)
+  @ManyToOne(() => BookEntity, book => book.reserves )
   @JoinColumn({
     name: 'ISBN',
   })

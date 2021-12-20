@@ -66,6 +66,7 @@ export class LibrarianService {
   //   return params;
   // }
   addBookItem(bookItem: any) {
+    console.log(bookItem);
     return this.bookItemRepository.save(bookItem);
   }
 }

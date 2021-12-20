@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookEntity } from '../entities/book.entity';
-import { Repository } from 'typeorm';
+import { getManager, Repository } from 'typeorm';
 import { AuthorEntity } from '../entities/author.entity';
 import { from } from 'rxjs';
 import { MemberEntity } from "../entities/member.entity";
 import { BookItemEntity } from "../entities/book-item.entity";
+import { ReserveEntity } from '../entities/reserve.entity';
 
 @Injectable()
 export class MemberService {
@@ -15,6 +16,7 @@ export class MemberService {
     @InjectRepository(AuthorEntity) private readonly authorRepository: Repository<AuthorEntity>,
     @InjectRepository(MemberEntity) private readonly memberRepository: Repository<MemberEntity>,
     @InjectRepository(BookItemEntity) private readonly bookItemRepository: Repository<BookItemEntity>,
+    @InjectRepository(ReserveEntity) private readonly reserveRepository: Repository<ReserveEntity>,
     ) {}
 
   getBooks(searchCondition, value) {
@@ -28,6 +30,21 @@ export class MemberService {
     }
 
     if (searchCondition === 'author') {
+      let authorId;
+      const authors = this.authorRepository.findOne({
+        where: {
+          name: value,
+        }
+      }).then((data) => {
+        authorId = data.personId;
+        console.log(authorId);
+        // return this.bookRepository.find({
+        //   where: {
+        //     author: authorId,
+        //   }
+        // })
+      });
+
 
     }
 
@@ -56,10 +73,12 @@ export class MemberService {
     }));
   }
 
-  borrowBook(bookId) {
-    const bookItem = this.bookItemRepository.findOne({
+  async borrowBook(bookId, memberId) {
+
+    const bookItem = await this.bookItemRepository.findOne({
       where: {
         state: true,
+        book: bookId,
       }
     })
 
@@ -68,9 +87,101 @@ export class MemberService {
       const newBookItem = {
         ...bookItem,
         state: false,
+        checkedOutDate: new Date(),
       }
-      return this.bookItemRepository.save(newBookItem);
+      await this.bookItemRepository.save(newBookItem);
+
+      const entityManager = getManager();
+      const query = await entityManager.query(`
+      INSERT INTO "BORROWS" VALUES('${memberId}', '${bookItem.barcode}')
+      `)
+
+      return {'message': 'book borrowed successfully'};
     }
     return {'message': 'All books are reserved'};
+  }
+
+  async reserveBook(memberId, bookISBN) {
+
+    const bookItem = await this.bookItemRepository.findOne({
+      where: {
+        state: true,
+        book: bookISBN,
+      }
+    })
+
+    console.log(bookItem);
+
+    if (!bookItem) {
+      // INSERT INTO "RESERVES" ("PERSON_ID", "ISBN") VALUES(201753, 12345);
+      const entityManager = getManager();
+      const query = await entityManager.query(`
+      INSERT INTO "RESERVES" ("PERSON_ID", "ISBN") VALUES(${memberId}, ${bookISBN});
+      `)
+    }
+    return {'message': 'there exists an available book'};
+  }
+
+  async renewBook(barcode) {
+
+    const bookItem = await this.bookItemRepository.findOne({
+      where: {
+        barcode: barcode,
+      }
+    })
+
+    const newBook = {
+      ...bookItem,
+      checkedOutDate: new Date()
+    }
+
+    return this.bookItemRepository.save(newBook);
+  }
+
+  async returnBook(barcode, memberId) {
+    let member = await this.memberRepository.findOne({
+      relations: ['borrowed'],
+      where: {
+        personId: memberId,
+      }
+    });
+
+    let bookItem = await this.bookItemRepository.findOne({
+      where: {
+        barcode: barcode,
+      }
+    });
+
+    bookItem['state'] = true;
+    console.log(bookItem);
+
+    await this.bookItemRepository.save(bookItem);
+    member['borrowed'] = member['borrowed'].filter(bookItem => {
+      return bookItem['barcode'] != barcode;
+    });
+
+    const date = new Date(
+      parseInt(bookItem.checkedOutDate.toString().substring(0, 4)),
+      parseInt(bookItem.checkedOutDate.toString().substring(5, 7))-1,
+      parseInt(bookItem.checkedOutDate.toString().substring(8)))
+
+    const passedDays = this.daysBetween(date, new Date());
+
+    if( passedDays > 90) {
+      const entityManager = getManager();
+      const penalty = (10 * (passedDays-90));
+
+
+      const query = await entityManager.query(`
+      INSERT INTO "PENALTY" ("MEMBER_NAME", "PENALTY_AMOUNT") VALUES(${member.name}, ${penalty});
+      `)
+    }
+
+    return await this.memberRepository.save(member);
+  }
+
+   private daysBetween(startDate: Date, endDate: Date) {
+    let millisecondsPerDay = 24 * 60 * 60 * 1000;
+    return ((endDate.getTime()) - (startDate.getTime())) / millisecondsPerDay;
   }
 }

@@ -1,7 +1,7 @@
-import { Column, CreateDateColumn, Entity, OneToMany } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { PersonEntity } from "./person.entity";
 import { ReserveEntity } from "./reserve.entity";
-import { BorrowEntity } from "./borrow.entity";
+import { BookItemEntity } from './book-item.entity';
 
 @Entity('MEMBERS')
 export class MemberEntity extends PersonEntity {
@@ -21,8 +21,19 @@ export class MemberEntity extends PersonEntity {
   @OneToMany(() => ReserveEntity, reserve => reserve.member)
   reserves: ReserveEntity[];
 
-  @OneToMany(() => BorrowEntity, borrowed => borrowed.member)
-  borrowed: BorrowEntity[];
+  @ManyToMany(() => BookItemEntity)
+  @JoinTable({
+    name: 'BORROWS',
+    joinColumn: {
+      name: 'MEMBER_ID',
+      referencedColumnName: 'personId',
+    },
+    inverseJoinColumn: {
+      name: 'BOOK_ITEM_BARCODE',
+      referencedColumnName: 'barcode'
+    }
+  })
+  borrowed: BookItemEntity[];
 
   @CreateDateColumn()
   createdMember: Date;
