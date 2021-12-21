@@ -12,7 +12,7 @@ export class LibrarianController {
     return this.librarianService.getLibrarian(librarianId);
   }
 
-  @Get('books')
+  @Get('books/all')
   getBooks() {
     return this.librarianService.getBooks();
   }
