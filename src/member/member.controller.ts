@@ -29,7 +29,7 @@ export class MemberController {
 
   @Post('reserve/:bookId/:memberId')
   reserveBook(@Param('bookId') bookISBN, @Param('memberId') memberId) {
-    return this.memberService.reserveBook(bookISBN, memberId)
+    return this.memberService.reserveBook(memberId, bookISBN)
   }
 
   @Post('renew/:barcode')
