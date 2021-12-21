@@ -13,8 +13,8 @@ export class LibrarianController {
   }
 
   @Get('books')
-  getAllBooks() {
-    return this.librarianService.getAllBooks();
+  getBooks() {
+    return this.librarianService.getBooks();
   }
 
   @Get('book/:id')

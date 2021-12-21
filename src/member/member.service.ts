@@ -65,7 +65,7 @@ export class MemberService {
       }));
     }
 
-    return {'message': 'search condition or value are of incorrect type'}
+    return from(this.bookRepository.find());
   }
 
   getMember(memberId) {

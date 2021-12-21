@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
-import { BookEntity } from '../entities/book.entity';
 import { Repository } from 'typeorm';
 import { from } from 'rxjs';
 import { MemberEntity } from '../entities/member.entity';
 import { LibrarianEntity } from '../entities/librarian.entity';
 import { BookItemEntity } from "../entities/book-item.entity";
+import { BookEntity } from '../entities/book.entity';
 
 @Injectable()
 export class LibrarianService {
@@ -26,9 +26,7 @@ export class LibrarianService {
     }));
   }
 
-  getAllBooks() {
-    return this.bookRepository.find();
-  }
+
   addBook(book: any) {
     return from(this.bookRepository.save(book));
   }
@@ -62,11 +60,12 @@ export class LibrarianService {
     return from(this.memberRepository.delete(memberId));
   }
 
-  // requestBook(params) {
-  //   return params;
-  // }
   addBookItem(bookItem: any) {
     console.log(bookItem);
     return this.bookItemRepository.save(bookItem);
+  }
+
+  getBooks() {
+    return from(this.bookRepository.find());
   }
 }
