@@ -6,6 +6,7 @@ import { MemberEntity } from '../entities/member.entity';
 import { LibrarianEntity } from '../entities/librarian.entity';
 import { BookItemEntity } from "../entities/book-item.entity";
 import { BookEntity } from '../entities/book.entity';
+import { AuthorEntity } from '../entities/author.entity';
 
 @Injectable()
 export class LibrarianService {
@@ -15,6 +16,7 @@ export class LibrarianService {
     @InjectRepository(MemberEntity) private readonly memberRepository: Repository<MemberEntity>,
     @InjectRepository(LibrarianEntity) private readonly librarianRepository: Repository<LibrarianEntity>,
     @InjectRepository(BookItemEntity) private readonly bookItemRepository: Repository<BookItemEntity>,
+    @InjectRepository(AuthorEntity) private readonly authorRepository: Repository<AuthorEntity>,
     ) {
   }
 
@@ -67,5 +69,13 @@ export class LibrarianService {
 
   getBooks() {
     return from(this.bookRepository.find());
+  }
+
+  addLibrarian(librarian) {
+    return from(this.librarianRepository.save(librarian));
+  }
+
+  addAuthor(author) {
+    return from(this.authorRepository.save(author));
   }
 }

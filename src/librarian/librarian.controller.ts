@@ -55,6 +55,16 @@ export class LibrarianController {
     return this.librarianService.addMember(member);
   }
 
+  @Post('librarian')
+  addLibrarian(@Body() librarian) {
+    return this.librarianService.addLibrarian(librarian);
+  }
+
+  @Post('author')
+  addAuthor(@Body() author) {
+    return this.librarianService.addAuthor(author);
+  }
+
   @Delete('member/:id')
   deleteMember(@Param('id') memberId: any) {
     return this.librarianService.deleteMember(memberId);
