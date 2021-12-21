@@ -4,8 +4,8 @@ import { BookEntity } from '../entities/book.entity';
 import { getManager, Repository } from 'typeorm';
 import { AuthorEntity } from '../entities/author.entity';
 import { from } from 'rxjs';
-import { MemberEntity } from "../entities/member.entity";
-import { BookItemEntity } from "../entities/book-item.entity";
+import { MemberEntity } from '../entities/member.entity';
+import { BookItemEntity } from '../entities/book-item.entity';
 import { ReserveEntity } from '../entities/reserve.entity';
 
 @Injectable()
@@ -17,70 +17,83 @@ export class MemberService {
     @InjectRepository(MemberEntity) private readonly memberRepository: Repository<MemberEntity>,
     @InjectRepository(BookItemEntity) private readonly bookItemRepository: Repository<BookItemEntity>,
     @InjectRepository(ReserveEntity) private readonly reserveRepository: Repository<ReserveEntity>,
-    ) {}
+  ) {
+  }
 
-  getBooks(searchCondition, value) {
+  async getBooks(searchCondition, value) {
+
+    console.log(searchCondition);
+    console.log(value);
 
     if (searchCondition === 'title') {
       return from(this.bookRepository.find({
         where: {
           title: value,
-        }
+        },
       }));
     }
 
     if (searchCondition === 'author') {
-      let authorId;
-      const authors = this.authorRepository.findOne({
+      let authorId = 0;
+      const author = await this.authorRepository.findOne({
         where: {
           name: value,
+        },
+      })
+      authorId = author.personId;
+      console.log(authorId);
+      return this.bookRepository.find({
+        where: {
+          author: authorId,
         }
-      }).then((data) => {
-        authorId = data.personId;
-        console.log(authorId);
-        // return this.bookRepository.find({
-        //   where: {
-        //     author: authorId,
-        //   }
-        // })
-      });
-
-
+      })
     }
 
     if (searchCondition === 'subject') {
       return from(this.bookRepository.find({
         where: {
           subject: value,
-        }
+        },
       }));
     }
 
-    if (searchCondition === 'publication-date') {
+    if (searchCondition === 'publicationDate') {
       return from(this.bookRepository.find({
         where: {
           publicationDate: value,
-        }
+        },
       }));
     }
+
+    return {'message': 'search condition or value are of incorrect type'}
   }
 
   getMember(memberId) {
     return from(this.memberRepository.findOne({
       where: {
         personId: memberId,
-      }
+      },
     }));
   }
 
   async borrowBook(bookId, memberId) {
 
+    const member = await this.memberRepository.findOne({
+      where: {
+        personId: memberId,
+      },
+    });
+
+    member['checkedOutNo'] += 1;
+    await this.memberRepository.save(member);
+
+
     const bookItem = await this.bookItemRepository.findOne({
       where: {
         state: true,
         book: bookId,
-      }
-    })
+      },
+    });
 
     if (bookItem) {
 
@@ -88,17 +101,17 @@ export class MemberService {
         ...bookItem,
         state: false,
         checkedOutDate: new Date(),
-      }
+      };
       await this.bookItemRepository.save(newBookItem);
 
       const entityManager = getManager();
       const query = await entityManager.query(`
       INSERT INTO "BORROWS" VALUES('${memberId}', '${bookItem.barcode}')
-      `)
+      `);
 
-      return {'message': 'book borrowed successfully'};
+      return { 'message': 'book borrowed successfully' };
     }
-    return {'message': 'All books are reserved'};
+    return { 'message': 'All books are reserved' };
   }
 
   async reserveBook(memberId, bookISBN) {
@@ -107,8 +120,8 @@ export class MemberService {
       where: {
         state: true,
         book: bookISBN,
-      }
-    })
+      },
+    });
 
     console.log(bookItem);
 
@@ -117,9 +130,9 @@ export class MemberService {
       const entityManager = getManager();
       const query = await entityManager.query(`
       INSERT INTO "RESERVES" ("PERSON_ID", "ISBN") VALUES(${memberId}, ${bookISBN});
-      `)
+      `);
     }
-    return {'message': 'there exists an available book'};
+    return { 'message': 'there exists an available book' };
   }
 
   async renewBook(barcode) {
@@ -127,13 +140,13 @@ export class MemberService {
     const bookItem = await this.bookItemRepository.findOne({
       where: {
         barcode: barcode,
-      }
-    })
+      },
+    });
 
     const newBook = {
       ...bookItem,
-      checkedOutDate: new Date()
-    }
+      checkedOutDate: new Date(),
+    };
 
     return this.bookItemRepository.save(newBook);
   }
@@ -143,13 +156,13 @@ export class MemberService {
       relations: ['borrowed'],
       where: {
         personId: memberId,
-      }
+      },
     });
 
     let bookItem = await this.bookItemRepository.findOne({
       where: {
         barcode: barcode,
-      }
+      },
     });
 
     bookItem['state'] = true;
@@ -162,25 +175,42 @@ export class MemberService {
 
     const date = new Date(
       parseInt(bookItem.checkedOutDate.toString().substring(0, 4)),
-      parseInt(bookItem.checkedOutDate.toString().substring(5, 7))-1,
-      parseInt(bookItem.checkedOutDate.toString().substring(8)))
+      parseInt(bookItem.checkedOutDate.toString().substring(5, 7)) - 1,
+      parseInt(bookItem.checkedOutDate.toString().substring(8)));
 
     const passedDays = this.daysBetween(date, new Date());
 
-    if( passedDays > 90) {
+    if (passedDays > 90) {
       const entityManager = getManager();
-      const penalty = (10 * (passedDays-90));
+      const penalty = (10 * (passedDays - 90));
 
 
       const query = await entityManager.query(`
       INSERT INTO "PENALTY" ("MEMBER_NAME", "PENALTY_AMOUNT") VALUES(${member.name}, ${penalty});
-      `)
+      `);
     }
+
+    member['checkedOutNo'] -= 1;
 
     return await this.memberRepository.save(member);
   }
 
-   private daysBetween(startDate: Date, endDate: Date) {
+  async getMemberBooks(memberId) {
+    const entityManager = getManager();
+    const query = await entityManager.query(`
+    SELECT b."ISBN", b."TITLE", A."NAME", bi."BARCODE"
+    from "MEMBERS" m
+    inner join "BORROWS" br on m."PERSON_ID" = br."MEMBER_ID"
+    inner join "BOOK_ITEMS" BI on br."BOOK_ITEM_BARCODE" = BI."BARCODE"
+    inner join "BOOKS" B on BI."ISBN" = B."ISBN"
+    inner join "AUTHORS" A on A."PERSON_ID" = B."authorPersonId"
+    where "MEMBER_ID"=${memberId}
+    `);
+
+    return query;
+  }
+
+  private daysBetween(startDate: Date, endDate: Date) {
     let millisecondsPerDay = 24 * 60 * 60 * 1000;
     return ((endDate.getTime()) - (startDate.getTime())) / millisecondsPerDay;
   }

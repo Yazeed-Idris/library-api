@@ -9,12 +9,17 @@ export class MemberController {
 
   @Get('books')
   getBooks(@Query() queryParams) {
-    this.memberService.getBooks(queryParams['searchCondition'], queryParams['value']);
+    return this.memberService.getBooks(queryParams['searchCondition'], queryParams['value']);
   }
 
   @Get(':id')
   getMember(@Param('id') memberId) {
     return this.memberService.getMember(memberId);
+  }
+
+  @Get('books/:memberId')
+  getMemberBooks(@Param('memberId') memberId) {
+    return this.memberService.getMemberBooks(memberId);
   }
 
   @Post('borrow/:bookId/:memberId')
