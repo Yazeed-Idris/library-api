@@ -21,7 +21,9 @@ export class MemberEntity extends PersonEntity {
   @OneToMany(() => ReserveEntity, reserve => reserve.member)
   reserves: ReserveEntity[];
 
-  @ManyToMany(() => BookItemEntity)
+  @ManyToMany(() => BookItemEntity, {
+    onDelete: 'CASCADE'
+  })
   @JoinTable({
     name: 'BORROWS',
     joinColumn: {

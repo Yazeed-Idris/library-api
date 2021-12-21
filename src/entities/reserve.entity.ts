@@ -22,7 +22,7 @@ export class ReserveEntity extends BaseEntity {
   })
   member: MemberEntity;
 
-  @ManyToOne(() => BookEntity, book => book.reserves )
+  @ManyToOne(() => BookEntity, book => book.reserves,{ onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'ISBN',
   })

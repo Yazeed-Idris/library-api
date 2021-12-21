@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BookEntity } from "./book.entity";
@@ -24,7 +23,9 @@ export class BookItemEntity extends BaseEntity {
   })
   state: boolean
 
-  @ManyToOne(() => BookEntity, book => book.bookItem)
+  @ManyToOne(() => BookEntity, book => book.bookItem, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({
     name: 'ISBN'
   })
@@ -44,7 +45,9 @@ export class BookItemEntity extends BaseEntity {
   })
   returnDate: Date;
 
-  @ManyToMany(() => MemberEntity)
+  @ManyToMany(() => MemberEntity, {
+    onDelete: 'CASCADE'
+  })
   members: MemberEntity[];
 
 
