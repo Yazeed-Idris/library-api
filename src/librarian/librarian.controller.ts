@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { LibrarianService } from "./librarian.service";
+import { from } from 'rxjs';
 
 @Controller('librarian')
 export class LibrarianController {
@@ -68,5 +69,25 @@ export class LibrarianController {
   @Delete('member/:id')
   deleteMember(@Param('id') memberId: any) {
     return this.librarianService.deleteMember(memberId);
+  }
+
+  @Get('members/inactive')
+  getInactiveMembers() {
+    return from(this.librarianService.getInactiveMembers());
+  }
+
+  @Get('members/penalties')
+  getPenalties() {
+    return from(this.librarianService.getPenalties());
+  }
+
+  @Get('members/late')
+  getLateMembers() {
+    return from(this.librarianService.getLateMembers());
+  }
+
+  @Get('members/outstanding')
+  getOutstandingMembers() {
+    return from(this.librarianService.getOutstandingMembers());
   }
 }

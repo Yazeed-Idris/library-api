@@ -172,7 +172,7 @@ export class MemberService {
 
     if (bookItem) {
       member['checkedOutNo'] -= 1;
-      await this.memberRepository.save(member);
+
       bookItem['state'] = true;
       console.log(bookItem);
 
@@ -182,6 +182,7 @@ export class MemberService {
         return bookItem['barcode'] != barcode;
       });
 
+      await this.memberRepository.save(member);
       const date = new Date(
         parseInt(bookItem.checkedOutDate.toString().substring(0, 4)),
         parseInt(bookItem.checkedOutDate.toString().substring(5, 7)) - 1,
@@ -191,11 +192,11 @@ export class MemberService {
 
       if (passedDays > 90) {
         const entityManager = getManager();
-        const penalty = (10 * (passedDays - 90));
+        const penalty = (10 * (Math.floor(passedDays) - 90));
 
 
         await entityManager.query(`
-      INSERT INTO "PENALTY" ("MEMBER_NAME", "PENALTY_AMOUNT") VALUES(${member.name}, ${penalty});
+      INSERT INTO "PENALTY" ("MEMBER_NAME", "PENALTY_AMOUNT", "MEMBER_ID") VALUES('${member.name}', ${penalty}, ${member.personId});
       `);
       }
 
@@ -221,4 +222,6 @@ export class MemberService {
     let millisecondsPerDay = 24 * 60 * 60 * 1000;
     return ((endDate.getTime()) - (startDate.getTime())) / millisecondsPerDay;
   }
+
+
 }

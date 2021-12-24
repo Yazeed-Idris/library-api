@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { MemberEntity } from './member.entity';
 
 @Entity('PENALTY')
 export class PeneltyEntity {
@@ -19,4 +20,11 @@ export class PeneltyEntity {
     type: 'int',
   })
   penaltyAmount: number;
+
+  @Column({
+    name: 'MEMBER_ID',
+    unique: true,
+    nullable: true,
+  })
+  memberId: number;
 }
